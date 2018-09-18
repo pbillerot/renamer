@@ -39,7 +39,8 @@ class Renamer():
             path = os.path.join(rep, entree)
             if os.path.isdir(path):
                 if niv_courant <= niv_atraiter:
-                    self.traiteDossiers(path, niv_atraiter, niv_courant+1)
+                    if ( not entree.startswith(".") ):
+                        self.traiteDossiers(path, niv_atraiter, niv_courant+1)
             else:
                 if niv_courant == niv_atraiter:
                     self.traiteFichier(path, entree, niv_courant)
@@ -61,7 +62,7 @@ class Renamer():
             if os.path.isfile(new_path):
                 print ("!!! REFUS existe déjà [%s]" % new_path)
             else:
-                print ("%s -> %s" % (path, new_path))
+                print ("%s%s -> %s" % (base, ext, new_file))
                 os.rename(path, new_path)
 
 if __name__ == '__main__':
@@ -73,5 +74,10 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--racine', default="",
                         help="Répertoire racine")
     # print(parser.parse_args())
+    args = parser.parse_args()
 
+    if os.path.isfile('LICENSE') and (args.racine == "." or args.racine == ""):
+        # une sécurité pour ne pas traiter le répertoire du projet
+        print ("Traitement refusé, car tu es sous le répertoire du projet")
+        exit()
     Renamer(parser.parse_args())
